@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Untitled</title>
+  
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Futuristic Multitasker</title>
+  <style>
+    /* --------- Palette & globals (warm pastel, futuristic) --------- */
+    :root{
+      --bg1: #fff8f3; /* very light warm */
+      --bg2: #fff5ee;
+      --card: rgba(255,255,255,0.65);
+      --glass: rgba(255,255,255,0.18);
+      --accent: #ffb4a2; /* pastel coral */
+      --accent-2: #ffd6a5; /* pastel peach */
+      --muted: #6b6b6b;
+      --glass-border: rgba(255,255,255,0.6);
+      --neon: rgba(255,180,160,0.18);
+      --shadow: 0 10px 30px rgba(18,18,18,0.06);
+      font-family: Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(160deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+
+    /* layout */
+    .app{
+      max-width:1100px;margin:28px auto;padding:28px;border-radius:22px;backdrop-filter: blur(8px) saturate(120%);background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.35));box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.5);
+      display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start
+    }
+
+    header.app-head{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+    .brand{display:flex;flex-direction:column}
+    .brand h1{font-style:italic;font-size:20px;margin:0;color:#3f3f3f;letter-spacing:0.6px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    /* left column */
+    .panel{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.75), rgba(255,255,255,0.55));border:1px solid rgba(255,255,255,0.6)}
+    .clock{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+    .time{font-size:36px;font-weight:700;color:#2f2f2f}
+    .date{font-size:13px;color:var(--muted)}
+
+    /* controls */
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .btn{padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:600;cursor:pointer;box-shadow:0 6px 16px rgba(255,160,140,0.18)}
+    .toggle{background:transparent;border:1px solid rgba(120,120,120,0.12);padding:6px 10px;border-radius:10px;cursor:pointer}
+
+    /* task area */
+    .tasks{display:flex;flex-direction:column;gap:12px}
+    .task-form{display:flex;flex-direction:column;gap:8px}
+    .task-form input, .task-form textarea, .task-form select{padding:10px;border-radius:10px;border:1px solid rgba(120,120,120,0.08);outline:none}
+    .task-list{display:flex;flex-direction:column;gap:10px;margin-top:8px;max-height:540px;overflow:auto;padding-right:6px}
+    .task-card{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--card);border:1px solid rgba(255,255,255,0.6)}
+    .task-meta{display:flex;gap:10px;align-items:center}
+    .task-title{font-weight:700}
+    .task-time{font-size:12px;color:var(--muted)}
+    .small-btn{padding:6px 8px;border-radius:8px;border:1px solid rgba(120,120,120,0.08);background:transparent;cursor:pointer}
+
+    /* right column */
+    .workspace{display:grid;grid-template-rows:auto 1fr;gap:12px}
+    .panel-large{padding:18px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.7));border:1px solid rgba(255,255,255,0.6)}
+
+    /* extra features */
+    .stats{display:flex;gap:12px}
+    .stat{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.65));text-align:center}
+    .stat h3{margin:0;color:#2f2f2f}
+    .stat p{margin:6px 0 0;color:var(--muted)}
+
+    /* pomodoro */
+    .pomodoro{display:flex;gap:12px;align-items:center}
+    .circle{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;background:linear-gradient(180deg,var(--neon),transparent);border:1px solid rgba(255,255,255,0.6)}
+
+    footer{margin-top:16px;text-align:center;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:980px){.app{grid-template-columns:1fr;max-width:760px;padding:18px}}
+
+    /* scrollbar tiny */
+    .task-list::-webkit-scrollbar{width:8px}
+    .task-list::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.06);border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="app" role="application">
+    <div>
+      <div class="header app-head">
+        <div class="brand">
+          <h1>Futuristic Multitasker</h1>
+          <p>Warm pastel • sleek • smart</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="clock">
+          <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+            <div>
+              <div class="time" id="india-time">--:--:--</div>
+              <div class="date" id="india-date">Loading...</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--muted)">Timezone</div>
+              <div style="font-weight:700">Asia / Kolkata</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="music-toggle" class="btn">Play Ambient</button>
+            <button id="notify-btn" class="toggle">Enable Notifications</button>
+          </div>
+        </div>
+
+        <hr style="margin:14px 0;border:none;border-top:1px solid rgba(0,0,0,0.04)">
+
+        <div class="tasks">
+          <h3 style="margin:0 0 6px 0">Add Task & Alarm</h3>
+          <form id="task-form" class="task-form" onsubmit="return false;">
+            <input id="task-title" placeholder="Task title (eg. Study Math)" required />
+            <textarea id="task-desc" rows="2" placeholder="Short notes (optional)"></textarea>
+            <div style="display:flex;gap:8px;">
+              <input id="task-datetime" type="datetime-local" style="flex:1" required />
+              <select id="task-snooze" style="width:110px">
+                <option value="0">No snooze</option>
+                <option value="300">Snooze 5m</option>
+                <option value="600">Snooze 10m</option>
+                <option value="900">Snooze 15m</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <label style="font-size:13px;color:var(--muted)"><input type="checkbox" id="task-alarm" checked /> Set alarm</label>
+              <select id="alarm-type">
+                <option value="beep">Beep</option>
+                <option value="melody">Melody</option>
+                <option value="vibrate">Vibrate</option>
+              </select>
+              <button id="add-task" class="btn" style="margin-left:auto">Add Task</button>
+            </div>
+          </form>
+
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <input id="filter" placeholder="Search tasks..." style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)" />
+            <button id="clear-done" class="small-btn">Clear Done</button>
+          </div>
+
+          <div class="task-list" id="task-list" aria-live="polite"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="workspace">
+      <div class="panel-large">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <h2 style="margin:0">Overview</h2>
+            <p style="margin:6px 0 0;color:var(--muted)">Your smart assistant for focus, tasks and gentle reminders.</p>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:12px;color:var(--muted)">Pending</div>
+            <div id="pending-count" style="font-weight:700;font-size:18px">0</div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="stats">
+          <div class="stat">
+            <h3 id="today-count">0</h3>
+            <p>Tasks today</p>
+          </div>
+          <div class="stat">
+            <h3 id="upcoming-count">0</h3>
+            <p>Upcoming</p>
+          </div>
+          <div class="stat">
+            <h3 id="done-count">0</h3>
+            <p>Completed</p>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div class="pomodoro">
+            <div class="circle" id="pom-display">25:00</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:8px">
+                <button id="pom-start" class="small-btn">Start</button>
+                <button id="pom-stop" class="small-btn">Stop</button>
+                <button id="pom-short" class="small-btn">Short (15)</button>
+                <button id="pom-reset" class="small-btn">Reset</button>
+              </div>
+              <div style="font-size:13px;color:var(--muted)">Pomodoro timer to boost focus</div>
+            </div>
+          </div>
+
+          <div style="flex:1;min-width:240px">
+            <h4 style="margin:0 0 6px 0">Quick Actions</h4>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button id="add-quick-task" class="small-btn">+ Quick Task</button>
+              <button id="mark-all-done" class="small-btn">Mark all done</button>
+              <button id="export-tasks" class="small-btn">Export</button>
+              <button id="import-tasks" class="small-btn">Import</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <footer>
+        Built with ♥ — pastel futuristic UI • Local alarms • No signup required
+      </footer>
+    </div>
+
+  </div>
+
+  <script>
+    // ---------- Utilities ----------
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    // Time for India (Asia/Kolkata)
+    function updateIndiaTime(){
+      const now = new Date();
+      // convert to UTC then to IST by offset +5.5 hours
+      const utc = now.getTime() + (now.getTimezoneOffset()*60000);
+      const ist = new Date(utc + (5.5*60*60*1000));
+      const hh = String(ist.getHours()).padStart(2,'0');
+      const mm = String(ist.getMinutes()).padStart(2,'0');
+      const ss = String(ist.getSeconds()).padStart(2,'0');
+      $('#india-time').textContent = `${hh}:${mm}:${ss}`;
+      $('#india-date').textContent = ist.toLocaleDateString(undefined,{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+    }
+    setInterval(updateIndiaTime,1000); updateIndiaTime();
+
+    // ---------- WebAudio ambient music & alarm ----------
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let ambientNodes = [];
+    let ambientPlaying = false;
+
+    function startAmbient(){
+      if(ambientPlaying) return;
+      ambientPlaying = true;
+      audioCtx.resume();
+      // create two gentle oscillators for pad-like ambient
+      const gain = audioCtx.createGain(); gain.gain.value = 0.06; gain.connect(audioCtx.destination);
+      const o1 = audioCtx.createOscillator(); o1.type='sine'; o1.frequency.value = 110; o1.detune.value = -10;
+      const o2 = audioCtx.createOscillator(); o2.type='sine'; o2.frequency.value = 220; o2.detune.value = 6;
+      const g2 = audioCtx.createGain(); g2.gain.value = 0.02;
+      o1.connect(gain); o2.connect(g2); g2.connect(gain);
+      o1.start(); o2.start();
+      ambientNodes = [o1,o2,gain,g2];
+    }
+    function stopAmbient(){
+      ambientPlaying = false;
+      ambientNodes.forEach(n=>{ try{ n.stop && n.stop(); n.disconnect && n.disconnect(); }catch(e){} });
+      ambientNodes=[];
+    }
+
+    function playAlarm(type='beep'){
+      audioCtx.resume();
+      const t0 = audioCtx.currentTime;
+      if(type==='vibrate' && navigator.vibrate){ navigator.vibrate([300,150,300]); }
+      if(type==='beep' || type==='vibrate'){
+        const beep = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        beep.type='sawtooth'; beep.frequency.setValueAtTime(880,t0);
+        beep.connect(g); g.connect(audioCtx.destination);
+        g.gain.setValueAtTime(0.0001,t0);
+        g.gain.exponentialRampToValueAtTime(0.6,t0+0.02);
+        beep.frequency.exponentialRampToValueAtTime(440,t0+0.6);
+        g.gain.exponentialRampToValueAtTime(0.0001,t0+1.5);
+        beep.start(t0); beep.stop(t0+1.5);
+      } else if(type==='melody'){
+        // simple melody sequence
+        const seq = [880,660,880,1100,880];
+        let start = t0;
+        const gain = audioCtx.createGain(); gain.connect(audioCtx.destination); gain.gain.value = 0.0001;
+        seq.forEach((f,i)=>{
+          const o = audioCtx.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(f,start + i*0.25);
+          const g = audioCtx.createGain(); g.gain.setValueAtTime(0.0001,start + i*0.25);
+          o.connect(g); g.connect(audioCtx.destination);
+          g.gain.exponentialRampToValueAtTime(0.6,start + i*0.25 + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001,start + i*0.25 + 0.23);
+          o.start(start + i*0.25); o.stop(start + i*0.25 + 0.24);
+        });
+      }
+    }
+
+    // ---------- Task system (localStorage) ----------
+    let tasks = JSON.parse(localStorage.getItem('fm_tasks') || '[]');
+
+    function saveTasks(){ localStorage.setItem('fm_tasks', JSON.stringify(tasks)); renderTasks(); updateCounts(); }
+
+    function renderTasks(filterText=''){
+      const list = $('#task-list'); list.innerHTML='';
+      const now = Date.now();
+      const sorted = tasks.slice().sort((a,b)=> new Date(a.when) - new Date(b.when));
+      sorted.forEach((t,i)=>{
+        if(filterText && !((t.title+t.desc).toLowerCase().includes(filterText.toLowerCase()))) return;
+        const el = document.createElement('div'); el.className='task-card';
+        const left = document.createElement('div'); left.className='task-meta';
+        const info = document.createElement('div');
+        info.innerHTML = `<div class="task-title">${escapeHtml(t.title)}</div><div class="task-time">${new Date(t.when).toLocaleString()}</div>`;
+        left.appendChild(info);
+        const right = document.createElement('div');
+        const btnDone = document.createElement('button'); btnDone.className='small-btn'; btnDone.textContent = t.done ? 'Undo' : 'Done';
+        btnDone.onclick = ()=>{ t.done = !t.done; saveTasks(); }
+        const btnSnooze = document.createElement('button'); btnSnooze.className='small-btn'; btnSnooze.textContent='Snooze';
+        btnSnooze.onclick = ()=>{ if(!t.snooze){ alert('No snooze set for this task'); return;} t.when = new Date(Date.now() + (t.snooze*1000)).toISOString(); saveTasks(); }
+        const btnDelete = document.createElement('button'); btnDelete.className='small-btn'; btnDelete.textContent='Delete'; btnDelete.onclick = ()=>{ if(confirm('Delete this task?')){ tasks = tasks.filter(x=>x.id!==t.id); saveTasks(); }}
+        right.appendChild(btnSnooze); right.appendChild(btnDone); right.appendChild(btnDelete);
+        el.appendChild(left); el.appendChild(right);
+        if(new Date(t.when).getTime() <= now && !t.triggered && t.alarm){
+          // trigger alarm immediately (in case app was closed and reopened)
+          triggerTaskAlarm(t);
+        }
+        list.appendChild(el);
+      });
+    }
+
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function addTask(obj){
+      obj.id = 't_'+Math.random().toString(36).slice(2,9);
+      obj.created = new Date().toISOString(); obj.done=false; obj.triggered=false;
+      tasks.push(obj); saveTasks(); scheduleAlarms();
+    }
+
+    // schedule alarms for future tasks
+    let alarmTimers = {};
+    function scheduleAlarms(){
+      // clear existing timers
+      Object.values(alarmTimers).forEach(id=>clearTimeout(id)); alarmTimers = {};
+      tasks.forEach(t=>{
+        if(!t.alarm || t.done) return;
+        const when = new Date(t.when).getTime();
+        const now = Date.now();
+        const ms = when - now;
+        if(ms <= 0){ // past -- trigger now unless already triggered
+          if(!t.triggered){ triggerTaskAlarm(t); }
+        } else {
+          alarmTimers[t.id] = setTimeout(()=> triggerTaskAlarm(t), ms);
+        }
+      });
+    }
+
+    function triggerTaskAlarm(t){
+      t.triggered = true; saveTasks();
+      // Visual cue
+      const n = document.createElement('div'); n.style.position='fixed'; n.style.right='18px'; n.style.bottom='18px'; n.style.padding='12px 16px'; n.style.borderRadius='12px'; n.style.background='linear-gradient(90deg,var(--accent),var(--accent-2))'; n.style.color='#fff'; n.style.boxShadow='0 8px 30px rgba(0,0,0,0.12)';
+      n.innerHTML = `<strong>${escapeHtml(t.title)}</strong><div style="font-size:13px">${escapeHtml(t.desc||'')}</div><div style="margin-top:8px;display:flex;gap:8px"><button id='dismiss' class='small-btn'>Dismiss</button><button id='sno' class='small-btn'>Snooze</button></div>`;
+      document.body.appendChild(n);
+      n.querySelector('#dismiss').onclick = ()=>{ document.body.removeChild(n); }
+      n.querySelector('#sno').onclick = ()=>{ t.when = new Date(Date.now() + (t.snooze*1000 || 300000)).toISOString(); t.triggered=false; saveTasks(); document.body.removeChild(n); }
+
+      // Desktop notification
+      if(window.Notification && Notification.permission === 'granted'){
+        const notif = new Notification('Task Reminder', {body: t.title + (t.desc?(' — '+t.desc):''), tag: t.id});
+        notif.onclick = ()=> window.focus();
+      }
+      // Play alarm sound
+      playAlarm(t.alarmType || 'beep');
+      // also try to vibrate
+      if(navigator.vibrate) navigator.vibrate(500);
+    }
+
+    // initial render
+    renderTasks(); scheduleAlarms();
+
+    // ---------- UI bindings ----------
+    $('#add-task').addEventListener('click', ()=>{
+      const title = $('#task-title').value.trim();
+      if(!title) return alert('Task title required');
+      const when = $('#task-datetime').value; if(!when) return alert('Pick date & time');
+      const alarm = $('#task-alarm').checked;
+      const snooze = Number($('#task-snooze').value);
+      const at = $('#alarm-type').value;
+      addTask({title,desc:$('#task-desc').value,when:new Date(when).toISOString(),alarm,snooze,alarmType:at});
+      $('#task-title').value=''; $('#task-desc').value=''; $('#task-datetime').value='';
+    });
+
+    $('#filter').addEventListener('input', (e)=>{ renderTasks(e.target.value); });
+    $('#clear-done').addEventListener('click', ()=>{ if(confirm('Clear all completed tasks?')){ tasks = tasks.filter(t=>!t.done); saveTasks(); }});
+
+    // Notifications
+    $('#notify-btn').addEventListener('click', async ()=>{
+      if(!('Notification' in window)){ alert('Notifications not supported in this browser'); return; }
+      if(Notification.permission === 'granted'){ alert('Already enabled'); return; }
+      const res = await Notification.requestPermission(); if(res === 'granted') alert('Notifications enabled'); else alert('Permission denied');
+    });
+
+    // ambient control
+    $('#music-toggle').addEventListener('click', ()=>{
+      if(!ambientPlaying){ startAmbient(); $('#music-toggle').textContent='Stop Ambient'; }
+      else { stopAmbient(); $('#music-toggle').textContent='Play Ambient'; }
+    });
+
+    // quick actions
+    $('#add-quick-task').addEventListener('click', ()=>{ const title = prompt('Quick task title:'); if(title) addTask({title,desc:'Quick task',when:new Date(Date.now()+5*60*1000).toISOString(),alarm:true,snooze:300,alarmType:'beep'}); });
+    $('#mark-all-done').addEventListener('click', ()=>{ if(confirm('Mark all tasks done?')){ tasks.forEach(t=>t.done=true); saveTasks(); }});
+    $('#export-tasks').addEventListener('click', ()=>{ const data = JSON.stringify(tasks,null,2); const blob = new Blob([data],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='tasks.json'; a.click(); URL.revokeObjectURL(url); });
+    $('#import-tasks').addEventListener('click', ()=>{ const input = document.createElement('input'); input.type='file'; input.accept='application/json'; input.onchange = (e)=>{
+      const f = e.target.files[0]; if(!f) return; const rd = new FileReader(); rd.onload = ()=>{ try{ const j = JSON.parse(rd.result); if(Array.isArray(j)){ tasks = j; saveTasks(); scheduleAlarms(); alert('Imported'); } else alert('Invalid file'); }catch(err){ alert('Invalid JSON'); } }; rd.readAsText(f);
+    }; input.click(); });
+
+    // Pomodoro
+    let pomInterval = null; let pomRemaining = 25*60; let pomRunning = false;
+    function updatePom(){ const mm = String(Math.floor(pomRemaining/60)).padStart(2,'0'); const ss = String(pomRemaining%60).padStart(2,'0'); $('#pom-display').textContent = `${mm}:${ss}`; }
+    $('#pom-start').addEventListener('click', ()=>{ if(pomRunning) return; pomRunning=true; pomInterval = setInterval(()=>{ if(pomRemaining>0){ pomRemaining--; updatePom(); } else { clearInterval(pomInterval); pomRunning=false; playAlarm('melody'); alert('Pomodoro finished'); } },1000); });
+    $('#pom-stop').addEventListener('click', ()=>{ pomRunning=false; clearInterval(pomInterval); });
+    $('#pom-reset').addEventListener('click', ()=>{ pomRunning=false; clearInterval(pomInterval); pomRemaining = 25*60; updatePom(); });
+    $('#pom-short').addEventListener('click', ()=>{ pomRunning=false; clearInterval(pomInterval); pomRemaining = 15*60; updatePom(); });
+    updatePom();
+
+    // mark triggered tasks as read when user interacts
+    window.addEventListener('click', ()=>{ tasks.forEach(t=>{ if(t.triggered){ t.triggered=false; } }); saveTasks(); });
+
+    // helper counts
+    function updateCounts(){
+      const now = new Date();
+      const today = tasks.filter(t=>{
+        const d = new Date(t.when);
+        return d.getDate()===now.getDate() && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+      });
+      $('#today-count').textContent = today.length;
+      $('#upcoming-count').textContent = tasks.filter(t=> new Date(t.when) > now).length;
+      $('#done-count').textContent = tasks.filter(t=> t.done).length;
+      $('#pending-count').textContent = tasks.filter(t=> !t.done).length;
+    }
+    updateCounts();
+
+    // schedule alarms when tasks change
+    window.addEventListener('storage', ()=>{ tasks = JSON.parse(localStorage.getItem('fm_tasks')||'[]'); renderTasks(); scheduleAlarms(); updateCounts(); });
+
+    // initial schedule on load
+    scheduleAlarms(); renderTasks(); updateCounts();
+
+  </script>
+</body>
+</html>
+<!-- partial -->
+  
+</body>
+</html>
